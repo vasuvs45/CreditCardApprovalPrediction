@@ -1,0 +1,27 @@
+create table profile
+(
+id SERIAL primary key,
+first_name varchar(50),
+email_id varchar(100) not null unique,
+pwd varchar(50),
+phone_number int not null,
+address varchar(100)
+); 	
+
+create table credit_card_details
+(
+credit_card varchar(100),
+minimum_credit_score int,
+minimum_credit_limit int,
+minimum_credit_history int,
+minimum_income_requirement int
+);
+
+create table user_details
+(
+user_id int references profile(id),
+minimum_credit_score   int,
+minimum_credit_limit   int,
+minimum_credit_history int,
+minimum_income_requirement int
+);
