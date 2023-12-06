@@ -6,13 +6,20 @@ from passlib.hash import pbkdf2_sha256
 import pandas as pd
 # Database Connection
 
+import psycopg2
+
 def connect_db():
     return psycopg2.connect(
+        # dbname="creditcard",
+        # user="postgres",
+        # password="postgres",
+        # host="localhost",
+        # port=5432
         dbname="creditcard",
-        user="postgres",
-        password="postgres",
-        host="localhost",
-        port=5432
+        user="avnadmin",
+        password="AVNS_WmRoLd2lqi5FDJaHjba",
+        host="pg-15012fe7-creditcard.a.aivencloud.com",
+        port=15690
     )
 
 # Create tables
