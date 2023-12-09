@@ -6,8 +6,6 @@ from passlib.hash import pbkdf2_sha256
 import pandas as pd
 # Database Connection
 
-import psycopg2
-
 def connect_db():
     return psycopg2.connect(
         # dbname="creditcard",
@@ -15,11 +13,12 @@ def connect_db():
         # password="postgres",
         # host="localhost",
         # port=5432
-        dbname="creditcard",
-        user="avnadmin",
-        password="AVNS_WmRoLd2lqi5FDJaHjba",
-        host="pg-15012fe7-creditcard.a.aivencloud.com",
-        port=15690
+        dbname="creditcarddb",
+        user="postgresuser",
+        password="eQ3pPcYfReKXb6KdOloKTbeN0rvPYFsQ",
+        host="dpg-clq6p89jvg7s73e3p5ag-a.ohio-postgres.render.com",
+        port=5432
+
     )
 
 # Create tables
@@ -149,9 +148,33 @@ def login():
             st.session_state.logged_in = True
             st.session_state.email_id = email_id
             st.success("Logged in as {}".format(email_id))
+            user_details = get_user_details(email_id)
+            if user_details:
+                user_id=user_details[0]
+                user_info=retrive_credit_information(user_id)
+
+                if user_info: 
+                    # Display credit information for returning users
+                    st.header("User Credit information")
+                    st.write("Existing Credit Score:", user_info[0][1])
+                    st.write("Existing Credit Limit::", user_info[0][2])
+                    st.write("Existing Credit History:", user_info[0][3])
+                    st.write("Existing Income:", user_info[0][4])
+                else:
+                    # Display welcome message for first-time users
+                    st.info("Welcome first time user. Please insert credit information for eligibility check")
         else:
             st.error("Invalid credentials")
 
+def retrive_credit_information(user_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    # Check if the username already exists
+    cursor.execute(
+        "SELECT * FROM user_details WHERE user_id = %s", (user_id,))
+    existing_user = cursor.fetchall()
+    conn.close()
+    return existing_user if existing_user else None
 
 def verify_credentials(email_id, password):
     conn = connect_db()
@@ -191,22 +214,12 @@ def credit_details(email_id):
             st.warning("You have already inserted your information once. Please Update your information from side bar")
             return
         if eligible_cards:
-            # Dropdown
-            selected_card = st.selectbox(
-                "Avaliable Credit Card", eligible_cards)
-            st.write(f"Selected Credit Card: {selected_card}")
+            #List
+            st.header("Eligible Credit Cards")
+            for i, card in enumerate(eligible_cards, 1):
+                st.write(f"{i}. {card[0]}")
         else:
             st.warning("No eligible credit cards found.")
-
-    # if st.button("Delete my credit information"):
-    #     user_data = get_user_details(email_id)
-    #     user_id = user_data[0]
-    #     delete_flag = delete_credit_information(user_id)
-    #     if delete_flag:
-    #         st.success(
-    #             "Deleted credit information for user with mail  {}".format(email_id))
-    #     else:
-    #         st.error("Invalid credentials")
 
 def create_credit_profile(user_id, credit_score, credit_limit, credit_history, income_requirement):
     conn = connect_db()
@@ -275,7 +288,6 @@ def update_credit_information(email_id):
     if st.button("UPDATE DETAILS AND CHECK ELIGIBILITY"):
         user_data = get_user_details(email_id)
         user_id = user_data[0]
-        print("Update for user_id:",user_id)
         # Call the function to update credit information
         update_flag = update_user_credit_information(
             user_id, updated_credit_score, updated_credit_limit, updated_credit_history, updated_income_requirement)
@@ -286,10 +298,10 @@ def update_credit_information(email_id):
             st.error("Credit Details for this user are unavailable.Please select Credit Detials Option from Side Bar.")
             return
         if new_eligible_cards:
-            # Dropdown
-            selected_card = st.selectbox(
-                "Avaliable Credit Card", new_eligible_cards)
-            st.write(f"Selected Credit Card: {selected_card}")
+            #List
+            st.header("Eligible Credit Cards")
+            for i, card in enumerate(new_eligible_cards, 1):
+                st.write(f"{i}. {card[0]}")
         else:
             st.warning("Still not eligible for any of the credit cards.")
 
@@ -300,7 +312,6 @@ def update_user_credit_information(user_id, updated_credit_score, updated_credit
     cursor = conn.cursor()
     try:
         # Update user_details table with the new credit information
-        print(user_id, updated_credit_score, updated_credit_limit, updated_credit_history, updated_income_requirement)
         
         #Check if user present or not
         cursor.execute(
@@ -323,7 +334,7 @@ def update_user_credit_information(user_id, updated_credit_score, updated_credit
     except Exception as e:
         print(f"An error occurred: {e}")
         conn.rollback()
-        return False
+        return Fallitse
 
     finally:
         conn.close()
@@ -345,13 +356,12 @@ def delete_credit_information(user_id):
     return False
 
 def delete_information(email_id):
-    st.header("Do you really want to delete crdit information")
+    st.header("Do you really want to delete credit information")
     # Input fields for updating credit information
     # Check if the user has clicked the "Update" button
     if st.button("DELETE CREDIT DETAILS"):
         user_data = get_user_details(email_id)
         user_id = user_data[0]
-        print("Delete for user_id:",user_id)
         # Call the function to update credit information
         deleted_flag = delete_credit_information(user_id)
         if deleted_flag:
