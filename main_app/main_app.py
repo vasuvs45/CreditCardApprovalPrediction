@@ -163,7 +163,7 @@ def login():
                     st.write("Existing Income:", user_info[0][4])
                 else:
                     # Display welcome message for first-time users
-                    st.info("Welcome first time user. Please click on login button again to insert credit information for eligibility check")
+                    st.info("Welcome to the Credit Card Eligibility Check Application. Please click on login button again to insert credit information for eligibility check")
         else:
             st.error("Invalid credentials")
 
@@ -381,7 +381,7 @@ def logout():
     st.session_state.updated_credit_history = None
     st.session_state.updated_income_requirement = None
     st.session_state.user_id = None
-    st.sidebar.success("Logged out successfully. Please click on Logout button again to be directed to Login Page.")
+    st.sidebar.success("Logged out successfully. Please select Logout button again from dropdown to be directed to Login Page.")
 
 
 def main():
