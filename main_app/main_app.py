@@ -156,6 +156,7 @@ def login():
                 if user_info: 
                     # Display credit information for returning users
                     st.header("User Credit information")
+                    st.info("Please click on login button again to update credit information for eligibility check")
                     st.write("Existing Credit Score:", user_info[0][1])
                     st.write("Existing Credit Limit::", user_info[0][2])
                     st.write("Existing Credit History:", user_info[0][3])
@@ -380,7 +381,7 @@ def logout():
     st.session_state.updated_credit_history = None
     st.session_state.updated_income_requirement = None
     st.session_state.user_id = None
-    st.sidebar.success("Logged out successfully")
+    st.sidebar.success("Logged out successfully. Please click on Logout button again to be directed to Login Page.")
 
 
 def main():
