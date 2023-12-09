@@ -162,7 +162,7 @@ def login():
                     st.write("Existing Income:", user_info[0][4])
                 else:
                     # Display welcome message for first-time users
-                    st.info("Welcome first time user. Please insert credit information for eligibility check")
+                    st.info("Welcome first time user. Please click on login button again to insert credit information for eligibility check")
         else:
             st.error("Invalid credentials")
 
